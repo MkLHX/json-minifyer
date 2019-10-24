@@ -42,12 +42,38 @@
 		</div>
 	</header>
 	<main class="row no-gutters justify-content-center mt-5">
-		<style>
+		<!-- <style>
 			iframe {
 				min-height: 100vh !important;
 			}
 		</style>
-		<script async src="https://jsfiddle.net/MkLHX/2kmt093n/embed/result,js,html/dark/"></script>
+		<script async src="https://jsfiddle.net/MkLHX/2kmt093n/embed/result,js,html/dark/"></script> -->
+		<div class="col-12 col-md-8 col-lg-6 mx-auto text-center">
+			<h3>Input json formated string</h3>
+			<textarea class="shadow border-0 col" id="input" rows="25" cols="80" width="100%" height="100%"></textarea>
+		</div>
+		<div class="w-100"></div>
+		<div class="col-12 col-md-8 col-lg-6 mx-auto text-center">
+			<ul class="list-unstyled">
+				<li class="list-item">json length: <span id="inJsonLen">0</span></li>
+			</ul>
+		</div>
+		<div class="w-100"></div>
+		<div class="col-12 col-md-8 col-lg-6 mx-auto text-center">
+			<h3>Output json minified</h3>
+			<textarea class="shadow border-0 col" id="output" rows="3" cols="80" wrap="off"></textarea>
+			<button type="button" id="copy" class="bg-transparent border-0" style="display: none;"><i class="far fa-copy fa-2x"></i></button>
+		</div>
+		<div class="w-100"></div>
+		<div class="col-12 col-md-8 col-lg-6 mx-auto text-center">
+			<ul class="list-unstyled">
+				<li class="list-item">json length: <span id="outJsonLen">0</span></li>
+			</ul>
+		</div>
+		<div class="col-12 text-center align-self-center my-5">
+			<button type="button" id="btnBackSlashes" class="btn btn-info btn-lg">add escape backslashes</button>
+			<button type="button" id="btnNoBackSlashes" class="btn btn-info btn-lg" style="display: none;">remove backslashes</button>
+		</div>
 	</main>
 	<footer class="row no-gutters justify-content-center">
 		<div class="col-12 bg-light text-secondary text-center align-self-center">
@@ -60,6 +86,73 @@
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 	<script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 	<script type="text/javascript" src="https://use.fontawesome.com/releases/v5.11.2/js/all.js"></script>
+	<script>
+		let input = document.getElementById('input');
+		let output = document.getElementById('output');
+		let copy = document.getElementById('copy');
+		let btnBackSlashes = document.getElementById('btnBackSlashes');
+		let btnNoBackSlashes = document.getElementById('btnNoBackSlashes');
+		let inJsonLen = document.getElementById('inJsonLen');
+		let outJsonLen = document.getElementById('outJsonLen');
+
+		const minifyer = () => {
+			if (input.value.length > 0) {
+				let jsonObject;
+				inJsonLen.innerHTML = input.value.length;
+				try {
+					jsonObject = JSON.parse(input.value);
+					//show json look pretty 
+					input.value = JSON.stringify(jsonObject, null, 4);
+					btnBackSlashes.style.display = 'inline';
+				} catch (e) {
+					alert(e);
+					btnBackSlashes.style.display = 'none';
+					btnNoBackSlashes.style.display = 'none';
+				}
+				let minified = JSON.stringify(jsonObject, null, 0)
+				output.value = minified;
+				outJsonLen.innerHTML = minified.length;
+			} else {
+				output.value = '';
+			}
+		};
+
+		input.addEventListener('keyup', () => {
+			setTimeout(() => { minifyer(); }, 1000);
+		});
+
+		btnBackSlashes.addEventListener('click', () => {
+			if (output.value.length > 0) {
+				let value = output.value.replace(/\"/g, '\\"');
+				output.value = '';
+				output.value = value;
+				copy.style.display = 'inline';
+				btnNoBackSlashes.style.display = 'inline';
+				btnBackSlashes.style.display = 'none';
+			} else {
+				alert('output cannot be empty to add escape backslash');
+			}
+		});
+		document.getElementById('btnNoBackSlashes').addEventListener('click', () => {
+			if (output.value.length > 0) {
+				let value = output.value.replace(/\\"/g, '\"');
+				output.value = '';
+				output.value = value;
+				btnBackSlashes.style.display = 'inline';
+				btnNoBackSlashes.style.display = 'none';
+			} else {
+				alert('output cannot be empty to add escape backslash');
+			}
+		});
+		document.getElementById('copy').addEventListener('click', () => {
+			if (output.value.length > 0) {
+				output.select();
+				document.execCommand("copy");
+			} else {
+				alert('cannot copy empty output');
+			}
+		});
+	</script>
 </body>
 
 </html>
